@@ -187,7 +187,7 @@ start 接收 query → 知识检索 → LLM 回答 → end。
 - 每条生产线都有代码质检和“不合格自动修改”分支
 - 分支结果聚合后统一格式输出
 
-![智能内容生产 Chatflow 拓扑](docs/images/content-factory-flow.png)
+![智能内容生产 Chatflow 画布](docs/images/content-factory-canvas.png)
 
 核心拓扑：
 
@@ -249,7 +249,7 @@ dify-dsl-creator/
 └── docs/
     ├── quickstart.docx
     └── images/
-        └── content-factory-flow.png
+        └── content-factory-canvas.png
 ```
 
 ---
