@@ -1,9 +1,10 @@
 # Dify DSL Creator
 
-> 用 Claude Code 生成、修复和校验可导入的青莲 Dify / Dify 工作流与 Chatflow DSL。
+> 用 AI Agent 生成、修复和校验可导入的青莲 Dify / Dify 工作流与 Chatflow DSL。
 
 <p>
-  <img alt="Claude Code Skill" src="https://img.shields.io/badge/Claude%20Code-Skill-6B4FBB">
+  <img alt="AI Agent Skill" src="https://img.shields.io/badge/AI%20Agent-Skill-6B4FBB">
+  <img alt="Works with Claude Code, DeepSeek, Codex, WorkBuddy" src="https://img.shields.io/badge/Works%20with-Claude%20Code%20%7C%20DeepSeek%20%7C%20Codex%20%7C%20WorkBuddy-0EA5E9">
   <img alt="Dify DSL" src="https://img.shields.io/badge/Dify%20DSL-0.3.0%20%7C%200.3.1-2563EB">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.9%2B-3776AB">
   <img alt="License" src="https://img.shields.io/badge/License-MIT-059669">
@@ -11,7 +12,7 @@
 
 Dify 的 DSL 是 YAML，但真正难的不是 YAML 语法，而是节点字段、变量选择器、分支 handle、连线方向、上游引用和画布布局。只要有一个地方不一致，导入后就可能出现“节点存在但变量为空”“分支永远不走”“画布全叠在一起”等问题。
 
-这个 Skill 把这些约束整理成 Claude Code 可以执行的流程：先确认业务和拓扑，再从真实底座生成节点与连线，最后用校验器逐项检查，直到输出 `VALIDATION_OK`。
+这个 Skill 把这些约束整理成 AI Agent 可以执行的流程：先确认业务和拓扑，再从真实底座生成节点与连线，最后用校验器逐项检查，直到输出 `VALIDATION_OK`。
 
 ---
 
@@ -24,6 +25,21 @@ Dify 的 DSL 是 YAML，但真正难的不是 YAML 语法，而是节点字段�
 - 在导入前做结构校验，提前发现会导致导入失败或运行异常的问题
 - 针对青莲 Dify `0.3.1` 做了真实导出校准
 - 自带一个 **23 节点 / 28 连线** 的完整内容生产 Chatflow 案例，不依赖知识库和外部 API
+
+## 🧠 支持的 AI 工具
+
+这个 Skill 不绑定某个客户端。只要能读取本地 `dify-dsl-creator` 文件夹、读写文件，并能运行 Python 校验脚本（或允许你手动执行命令），就可以使用。常见例子：
+
+| 工具 | 使用方式 |
+| --- | --- |
+| 桌面版 DeepSeek | 在工具中打开或加载本地 Skill / 规则文件夹 |
+| Codex | 放到项目目录，或工具可读取的规则 / 技能目录 |
+| WorkBuddy | 在 Skill / 知识文件设置中添加该文件夹 |
+| Claude Code | 放到 `~/.claude/skills/` |
+| CoStrict.ai | 放到其 skills 目录，使用 vibe 模式 |
+| 其他 AI Agent | 只要能读取本地文件并执行命令即可 |
+
+> 不同客户端的 Skill 目录和加载方式不同，以上只是常见示例，具体以你使用的工具为准。没有安装教程，也不需要为了这个 Skill 重装环境。
 
 ## 🧩 支持的应用模式
 
@@ -40,32 +56,46 @@ Dify 的 DSL 是 YAML，但真正难的不是 YAML 语法，而是节点字段�
 
 ## 🚀 快速开始
 
-### 1. 克隆到 Claude Code 的 skills 目录
+### 1. 把 Skill 放到 AI 工具能读取的目录
 
-**Windows PowerShell：**
+**Claude Code（Windows PowerShell）：**
 
 ```powershell
 git clone https://github.com/<your-github-username>/dify-dsl-creator.git "$env:USERPROFILE\.claude\skills\dify-dsl-creator"
 ```
 
-**macOS / Linux：**
+**Claude Code（macOS / Linux）：**
 
 ```bash
 git clone https://github.com/<your-github-username>/dify-dsl-creator.git ~/.claude/skills/dify-dsl-creator
 ```
 
+**其他 AI 工具：**
+
+```bash
+# 先克隆到任意目录
+git clone https://github.com/<your-github-username>/dify-dsl-creator.git
+
+# 然后在工具中打开这个目录，或复制到该工具的 skills 目录
+```
+
 如果目录已经存在，先备份或换一个目录名。
+
+> 桌面版 DeepSeek、Codex、WorkBuddy、CoStrict.ai 等工具的 Skill 目录不同，按各工具的实际设置放置即可；没有强制目录要求。
 
 ### 2. 安装校验器依赖
 
 ```bash
-cd ~/.claude/skills/dify-dsl-creator
+# 把路径换成你实际放置 Skill 的目录
+cd /path/to/dify-dsl-creator
 python -m pip install -r requirements.txt
 ```
 
 只需要 Python 3.9+ 和 PyYAML。
 
-### 3. 在 Claude Code 里直接描述需求
+### 3. 在 AI 工具里直接描述需求
+
+在任意支持的 AI 工具中，直接输入：
 
 ```text
 用 dify-dsl-creator 帮我做一个青莲 Dify 0.3.1 的 advanced-chat 应用。
@@ -297,7 +327,7 @@ dify-dsl-creator/
 - 如果导入提示版本不支持，参考 [version-compatibility.md](references/version-compatibility.md)。
 - 不要把其他平台的 DSL 语法直接混进来；校验器会拦截 FastGPT 风格的写法。
 - Agent 模式、插件节点、工具节点的结构差异较大，必须有真实导出再生成。
-- 本项目是 Claude Code Skill，不是 Dify 插件，也不替代 Dify 运行时。
+- 本项目是 AI Agent Skill，不是 Dify 插件，也不替代 Dify 运行时。
 
 ## 🤝 贡献
 
