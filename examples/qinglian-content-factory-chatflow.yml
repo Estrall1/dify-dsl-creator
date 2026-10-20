@@ -1,9 +1,9 @@
 app:
-  description: 青莲 Dify 0.3.1 智能内容生产 Chatflow：平台分类、参数提取、分支生成、质量检查与自动修改，无需知识库。
+  description: 青莲 Dify 0.3.1 文案生成助手 Chatflow：平台分类、参数提取、分支生成、质量检查与自动修改，无需知识库。
   icon: 🤖
   icon_background: '#FFEAD5'
   mode: advanced-chat
-  name: 智能内容生产助手
+  name: 文案生成助手
   use_icon_as_answer_icon: false
 dependencies:
 - current_identifier: null
@@ -44,7 +44,7 @@ workflow:
         - local_file
         - remote_url
       number_limits: 3
-    opening_statement: 你好，我是智能内容生产助手。请告诉我主题、目标平台、受众、语气和期望字数。
+    opening_statement: 你好，我是文案生成助手。请告诉我主题、目标平台、受众、语气和期望字数。
     retriever_resource:
       enabled: false
     sensitive_word_avoidance:

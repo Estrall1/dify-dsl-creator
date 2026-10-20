@@ -24,7 +24,7 @@ Dify 的 DSL 是 YAML，但真正难的不是 YAML 语法，而是节点字段�
 - 修复已有的 Dify DSL：补节点、补连线、改变量引用、调整布局
 - 在导入前做结构校验，提前发现会导致导入失败或运行异常的问题
 - 针对青莲 Dify `0.3.1` 做了真实导出校准
-- 自带一个 **23 节点 / 28 连线** 的完整内容生产 Chatflow 案例，不依赖知识库和外部 API
+- 自带一个 **23 节点 / 28 连线** 的完整文案生成助手 Chatflow 案例，不依赖知识库和外部 API
 
 ## 🧠 支持的 AI 工具
 
@@ -203,7 +203,7 @@ start 接收 query → 知识检索 → LLM 回答 → end。
 
 ---
 
-## 🏭 完整案例：智能内容生产 Chatflow
+## 🏭 完整案例：文案生成助手
 
 `examples/qinglian-content-factory-chatflow.yml` 是一个可直接参考的完整案例：
 
@@ -213,11 +213,11 @@ start 接收 query → 知识检索 → LLM 回答 → end。
 - 23 个节点，28 条连线
 - 不需要知识库
 - 不需要外部 API
-- 小红书、公众号、短视频、通用四条内容生产线
+- 小红书、公众号、短视频、通用四条文案生产线
 - 每条生产线都有代码质检和“不合格自动修改”分支
 - 分支结果聚合后统一格式输出
 
-![智能内容生产 Chatflow 画布](docs/images/content-factory-canvas.png)
+![文案生成助手 Chatflow 画布](docs/images/content-factory-canvas.png)
 
 核心拓扑：
 
