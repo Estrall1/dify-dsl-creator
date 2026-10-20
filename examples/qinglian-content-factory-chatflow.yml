@@ -1,0 +1,1200 @@
+app:
+  description: 青莲 Dify 0.3.1 智能内容生产 Chatflow：平台分类、参数提取、分支生成、质量检查与自动修改，无需知识库。
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 智能内容生产助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.6@dd589dc093c8084925858034ab5ec1fdf0d33819f43226c2f8c4a749a9acbbb2
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 500
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 你好，我是智能内容生产助手。请告诉我主题、目标平台、受众、语气和期望字数。
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 帮我写一篇小红书笔记：秋冬护肤，大学生，语气轻松，300字。
+    - 帮我写一篇公众号文章：远程办公的效率提升，职场人，专业语气，800字。
+    - 帮我写一条短视频口播脚本：3分钟学会番茄工作法，年轻上班族，节奏快，300字。
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: parameter-extractor
+      id: e-start-params
+      source: '1792476430882'
+      sourceHandle: source
+      target: extract_params
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: parameter-extractor
+        targetType: question-classifier
+      id: e-params-classify
+      source: extract_params
+      sourceHandle: source
+      target: classify_platform
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: llm
+      id: e-classify-xhs
+      source: classify_platform
+      sourceHandle: xhs
+      target: xhs_writer
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: llm
+      id: e-classify-wechat
+      source: classify_platform
+      sourceHandle: wechat
+      target: wechat_outline
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: llm
+      id: e-classify-video
+      source: classify_platform
+      sourceHandle: video
+      target: video_script
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: question-classifier
+        targetType: llm
+      id: e-classify-general
+      source: classify_platform
+      sourceHandle: general
+      target: general_llm
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: code
+      id: e-xhs-writer-check
+      source: xhs_writer
+      sourceHandle: source
+      target: xhs_check
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: code
+        targetType: if-else
+      id: e-xhs-check-if
+      source: xhs_check
+      sourceHandle: source
+      target: xhs_if
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: llm
+      id: e-xhs-if-revise
+      source: xhs_if
+      sourceHandle: revise
+      target: xhs_revise
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: variable-aggregator
+      id: e-xhs-if-merge
+      source: xhs_if
+      sourceHandle: 'false'
+      target: xhs_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: variable-aggregator
+      id: e-xhs-revise-merge
+      source: xhs_revise
+      sourceHandle: source
+      target: xhs_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: llm
+      id: e-wechat-outline-draft
+      source: wechat_outline
+      sourceHandle: source
+      target: wechat_draft
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: code
+      id: e-wechat-draft-check
+      source: wechat_draft
+      sourceHandle: source
+      target: wechat_check
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: code
+        targetType: if-else
+      id: e-wechat-check-if
+      source: wechat_check
+      sourceHandle: source
+      target: wechat_if
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: llm
+      id: e-wechat-if-revise
+      source: wechat_if
+      sourceHandle: revise
+      target: wechat_revise
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: variable-aggregator
+      id: e-wechat-if-merge
+      source: wechat_if
+      sourceHandle: 'false'
+      target: wechat_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: variable-aggregator
+      id: e-wechat-revise-merge
+      source: wechat_revise
+      sourceHandle: source
+      target: wechat_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: code
+      id: e-video-script-check
+      source: video_script
+      sourceHandle: source
+      target: video_check
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: code
+        targetType: if-else
+      id: e-video-check-if
+      source: video_check
+      sourceHandle: source
+      target: video_if
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: llm
+      id: e-video-if-revise
+      source: video_if
+      sourceHandle: revise
+      target: video_revise
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: if-else
+        targetType: variable-aggregator
+      id: e-video-if-merge
+      source: video_if
+      sourceHandle: 'false'
+      target: video_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: variable-aggregator
+      id: e-video-revise-merge
+      source: video_revise
+      sourceHandle: source
+      target: video_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: variable-aggregator
+        targetType: variable-aggregator
+      id: e-xhs-merge-final
+      source: xhs_merge
+      sourceHandle: source
+      target: final_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: variable-aggregator
+        targetType: variable-aggregator
+      id: e-wechat-merge-final
+      source: wechat_merge
+      sourceHandle: source
+      target: final_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: variable-aggregator
+        targetType: variable-aggregator
+      id: e-video-merge-final
+      source: video_merge
+      sourceHandle: source
+      target: final_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: llm
+        targetType: variable-aggregator
+      id: e-general-final
+      source: general_llm
+      sourceHandle: source
+      target: final_merge
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: variable-aggregator
+        targetType: template-transform
+      id: e-final-format
+      source: final_merge
+      sourceHandle: source
+      target: format_output
+      targetHandle: target
+      type: custom
+    - data:
+        sourceType: template-transform
+        targetType: answer
+      id: e-format-answer
+      source: format_output
+      sourceHandle: source
+      target: final_answer
+      targetHandle: target
+      type: custom
+    nodes:
+    - data:
+        type: start
+        title: 开始
+        desc: ''
+        selected: false
+        variables: []
+      height: 54
+      id: '1792476430882'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: parameter-extractor
+        title: 参数提取
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0
+        query:
+        - '1792476430882'
+        - sys.query
+        instruction: 从用户的内容创作需求中提取主题、目标平台、目标受众、语气风格和期望字数。无法确定的字段留空；length 只提取数字。
+        reasoning_mode: prompt
+        parameters:
+        - name: topic
+          type: string
+          description: 内容主题
+          required: true
+        - name: platform
+          type: string
+          description: 目标平台：小红书、公众号、短视频或通用
+          required: true
+        - name: audience
+          type: string
+          description: 目标受众
+          required: false
+        - name: tone
+          type: string
+          description: 语气风格
+          required: false
+        - name: length
+          type: number
+          description: 期望字数，只保留数字
+          required: false
+      height: 98
+      id: extract_params
+      position:
+        x: 380
+        y: 282
+      positionAbsolute:
+        x: 380
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: question-classifier
+        title: 平台分类
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0
+        query_variable_selector:
+        - '1792476430882'
+        - sys.query
+        classes:
+        - id: xhs
+          name: 小红书
+        - id: wechat
+          name: 公众号
+        - id: video
+          name: 短视频
+        - id: general
+          name: 通用
+      height: 130
+      id: classify_platform
+      position:
+        x: 680
+        y: 282
+      positionAbsolute:
+        x: 680
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 小红书文案
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是资深小红书内容策划，擅长写出有网感、可读性强的爆款笔记。
+        - role: user
+          text: |-
+            请根据以下信息创作一篇小红书笔记。
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+            用户原始需求：{{#sys.query#}}
+
+            要求：
+            1. 输出标题、正文和至少 3 个话题标签。
+            2. 标题要有吸引力，正文分段清晰，适当使用 emoji。
+            3. 不要输出解释，只输出可直接发布的文案。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: xhs_writer
+      position:
+        x: 980
+        y: 42
+      positionAbsolute:
+        x: 980
+        y: 42
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: code
+        title: 小红书检查
+        desc: ''
+        selected: false
+        code_language: python3
+        code: |
+          def main(text: str, target_length: float = 300) -> dict:
+              text = text or ""
+              target = int(float(target_length or 300))
+              length = len("".join(text.split()))
+              tags = []
+              for line in text.splitlines():
+                  tags.extend(part for part in line.split() if part.startswith("#"))
+              reasons = []
+              if length < max(120, int(target * 0.6)):
+                  reasons.append("正文偏短，当前约 %d 字" % length)
+              if length > int(target * 1.8):
+                  reasons.append("正文偏长，当前约 %d 字" % length)
+              if len(tags) < 3:
+                  reasons.append("话题标签少于 3 个")
+              status = "revise" if reasons else "ok"
+              reason = "；".join(reasons) if reasons else "字数和标签符合要求"
+              return {"status": status, "reason": reason, "word_count": length}
+        variables:
+        - variable: text
+          value_selector:
+          - xhs_writer
+          - text
+        - variable: target_length
+          value_selector:
+          - extract_params
+          - length
+        outputs:
+          status:
+            type: string
+            children: null
+          reason:
+            type: string
+            children: null
+          word_count:
+            type: number
+            children: null
+      height: 130
+      id: xhs_check
+      position:
+        x: 1280
+        y: 42
+      positionAbsolute:
+        x: 1280
+        y: 42
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: if-else
+        title: 小红书是否修改
+        desc: ''
+        selected: false
+        cases:
+        - case_id: revise
+          logical_operator: and
+          conditions:
+          - id: xhs_if-status
+            comparison_operator: is
+            value: revise
+            varType: string
+            variable_selector:
+            - xhs_check
+            - status
+      height: 130
+      id: xhs_if
+      position:
+        x: 1580
+        y: 42
+      positionAbsolute:
+        x: 1580
+        y: 42
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 小红书修改
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是小红书文案编辑，擅长在保留原意的前提下优化标题、正文和标签。
+        - role: user
+          text: |-
+            下面是一篇需要修改的小红书文案。
+            原文：
+            {{#xhs_writer.text#}}
+
+            检查反馈：
+            {{#xhs_check.reason#}}
+
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+
+            请根据反馈重写，输出标题、正文和至少 3 个话题标签，不要输出解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: xhs_revise
+      position:
+        x: 1880
+        y: -90
+      positionAbsolute:
+        x: 1880
+        y: -90
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: variable-aggregator
+        title: 小红书结果
+        desc: ''
+        selected: false
+        output_type: string
+        variables:
+        - - xhs_revise
+          - text
+        - - xhs_writer
+          - text
+      height: 98
+      id: xhs_merge
+      position:
+        x: 2180
+        y: 42
+      positionAbsolute:
+        x: 2180
+        y: 42
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 公众号大纲
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是公众号内容策划，擅长设计结构清晰、有信息增量的长文大纲。
+        - role: user
+          text: |-
+            请为以下主题设计一份公众号文章大纲。
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+            用户原始需求：{{#sys.query#}}
+
+            要求：输出标题、3-5 个一级章节、每章 2-3 个要点。只输出大纲，不要解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: wechat_outline
+      position:
+        x: 980
+        y: 362
+      positionAbsolute:
+        x: 980
+        y: 362
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 公众号正文
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是公众号长文作者，擅长把大纲扩写成有逻辑、有案例、有总结的文章。
+        - role: user
+          text: |-
+            请根据以下大纲写一篇完整的公众号文章。
+            大纲：
+            {{#wechat_outline.text#}}
+
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+
+            要求：结构完整，有开头、正文分节和结尾总结；不要输出解释，只输出文章正文。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: wechat_draft
+      position:
+        x: 1280
+        y: 362
+      positionAbsolute:
+        x: 1280
+        y: 362
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: code
+        title: 公众号检查
+        desc: ''
+        selected: false
+        code_language: python3
+        code: |
+          def main(text: str, target_length: float = 800) -> dict:
+              text = text or ""
+              target = int(float(target_length or 800))
+              length = len("".join(text.split()))
+              headings = len([line for line in text.splitlines() if line.strip().startswith("#")])
+              reasons = []
+              if length < max(300, int(target * 0.6)):
+                  reasons.append("正文偏短，当前约 %d 字" % length)
+              if length > int(target * 1.8):
+                  reasons.append("正文偏长，当前约 %d 字" % length)
+              if headings < 3:
+                  reasons.append("章节标题少于 3 个")
+              status = "revise" if reasons else "ok"
+              reason = "；".join(reasons) if reasons else "字数和章节结构符合要求"
+              return {"status": status, "reason": reason, "word_count": length}
+        variables:
+        - variable: text
+          value_selector:
+          - wechat_draft
+          - text
+        - variable: target_length
+          value_selector:
+          - extract_params
+          - length
+        outputs:
+          status:
+            type: string
+            children: null
+          reason:
+            type: string
+            children: null
+          word_count:
+            type: number
+            children: null
+      height: 130
+      id: wechat_check
+      position:
+        x: 1580
+        y: 362
+      positionAbsolute:
+        x: 1580
+        y: 362
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: if-else
+        title: 公众号是否修改
+        desc: ''
+        selected: false
+        cases:
+        - case_id: revise
+          logical_operator: and
+          conditions:
+          - id: wechat_if-status
+            comparison_operator: is
+            value: revise
+            varType: string
+            variable_selector:
+            - wechat_check
+            - status
+      height: 130
+      id: wechat_if
+      position:
+        x: 1880
+        y: 362
+      positionAbsolute:
+        x: 1880
+        y: 362
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 公众号修改
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是公众号主编，擅长根据审稿意见优化文章结构、论据和表达。
+        - role: user
+          text: |-
+            下面是一篇需要修改的公众号文章。
+            原文：
+            {{#wechat_draft.text#}}
+
+            检查反馈：
+            {{#wechat_check.reason#}}
+
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+
+            请根据反馈重写文章，保留原有信息增量，补足章节和字数，不要输出解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: wechat_revise
+      position:
+        x: 2180
+        y: 230
+      positionAbsolute:
+        x: 2180
+        y: 230
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: variable-aggregator
+        title: 公众号结果
+        desc: ''
+        selected: false
+        output_type: string
+        variables:
+        - - wechat_revise
+          - text
+        - - wechat_draft
+          - text
+      height: 98
+      id: wechat_merge
+      position:
+        x: 2480
+        y: 362
+      positionAbsolute:
+        x: 2480
+        y: 362
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 短视频脚本
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是短视频编导，擅长写口播自然、节奏紧凑、适合 60-90 秒的脚本。
+        - role: user
+          text: |-
+            请根据以下信息写一条短视频口播脚本。
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+            用户原始需求：{{#sys.query#}}
+
+            要求：包含开头钩子、3-5 个分镜或段落、结尾行动号召，并标注大致时长。只输出脚本，不要解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: video_script
+      position:
+        x: 980
+        y: 682
+      positionAbsolute:
+        x: 980
+        y: 682
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: code
+        title: 短视频检查
+        desc: ''
+        selected: false
+        code_language: python3
+        code: |
+          def main(text: str, target_length: float = 300) -> dict:
+              text = text or ""
+              target = int(float(target_length or 300))
+              length = len("".join(text.split()))
+              lines = [line for line in text.splitlines() if line.strip()]
+              reasons = []
+              if length < max(100, int(target * 0.5)):
+                  reasons.append("脚本偏短，当前约 %d 字" % length)
+              if length > int(target * 1.8):
+                  reasons.append("脚本偏长，当前约 %d 字" % length)
+              if len(lines) < 3:
+                  reasons.append("分镜或段落少于 3 段")
+              status = "revise" if reasons else "ok"
+              reason = "；".join(reasons) if reasons else "字数和分镜结构符合要求"
+              return {"status": status, "reason": reason, "word_count": length}
+        variables:
+        - variable: text
+          value_selector:
+          - video_script
+          - text
+        - variable: target_length
+          value_selector:
+          - extract_params
+          - length
+        outputs:
+          status:
+            type: string
+            children: null
+          reason:
+            type: string
+            children: null
+          word_count:
+            type: number
+            children: null
+      height: 130
+      id: video_check
+      position:
+        x: 1280
+        y: 682
+      positionAbsolute:
+        x: 1280
+        y: 682
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: if-else
+        title: 短视频是否修改
+        desc: ''
+        selected: false
+        cases:
+        - case_id: revise
+          logical_operator: and
+          conditions:
+          - id: video_if-status
+            comparison_operator: is
+            value: revise
+            varType: string
+            variable_selector:
+            - video_check
+            - status
+      height: 130
+      id: video_if
+      position:
+        x: 1580
+        y: 682
+      positionAbsolute:
+        x: 1580
+        y: 682
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 短视频修改
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是短视频导演，擅长根据拍摄反馈优化口播节奏、分镜和行动号召。
+        - role: user
+          text: |-
+            下面是一条需要修改的短视频脚本。
+            原文：
+            {{#video_script.text#}}
+
+            检查反馈：
+            {{#video_check.reason#}}
+
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+
+            请根据反馈重写脚本，保留开头钩子和结尾行动号召，不要输出解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: video_revise
+      position:
+        x: 1880
+        y: 550
+      positionAbsolute:
+        x: 1880
+        y: 550
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: variable-aggregator
+        title: 短视频结果
+        desc: ''
+        selected: false
+        output_type: string
+        variables:
+        - - video_revise
+          - text
+        - - video_script
+          - text
+      height: 98
+      id: video_merge
+      position:
+        x: 2180
+        y: 682
+      positionAbsolute:
+        x: 2180
+        y: 682
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: llm
+        title: 通用文案
+        desc: ''
+        selected: false
+        model:
+          provider: langgenius/deepseek/deepseek
+          name: deepseek-chat
+          mode: chat
+          completion_params:
+            temperature: 0.7
+        prompt_template:
+        - role: system
+          text: 你是通用文案专家，能够根据主题、受众和语气要求写出结构清晰、可直接使用的文案。
+        - role: user
+          text: |-
+            请根据以下信息创作一篇通用文案。
+            主题：{{#extract_params.topic#}}
+            目标受众：{{#extract_params.audience#}}
+            语气风格：{{#extract_params.tone#}}
+            目标字数：{{#extract_params.length#}}
+            用户原始需求：{{#sys.query#}}
+
+            要求：有标题、正文和结尾；语言自然，信息具体；不要输出解释。
+        variables: []
+        context:
+          enabled: false
+          variable_selector: []
+        vision:
+          enabled: false
+      height: 90
+      id: general_llm
+      position:
+        x: 980
+        y: 1002
+      positionAbsolute:
+        x: 980
+        y: 1002
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: variable-aggregator
+        title: 最终结果聚合
+        desc: ''
+        selected: false
+        output_type: string
+        variables:
+        - - xhs_merge
+          - output
+        - - wechat_merge
+          - output
+        - - video_merge
+          - output
+        - - general_llm
+          - text
+      height: 98
+      id: final_merge
+      position:
+        x: 2780
+        y: 522
+      positionAbsolute:
+        x: 2780
+        y: 522
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: template-transform
+        title: 统一格式
+        desc: ''
+        selected: false
+        template: |
+          # {{ topic }}｜{{ platform }}文案
+
+          {{ content }}
+
+          ---
+          生成模型：deepseek-chat
+        variables:
+        - variable: content
+          value_selector:
+          - final_merge
+          - output
+        - variable: platform
+          value_selector:
+          - classify_platform
+          - class_name
+        - variable: topic
+          value_selector:
+          - extract_params
+          - topic
+      height: 130
+      id: format_output
+      position:
+        x: 3080
+        y: 522
+      positionAbsolute:
+        x: 3080
+        y: 522
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        type: answer
+        title: 直接回复
+        desc: ''
+        selected: false
+        answer: '{{#format_output.output#}}'
+        variables: []
+      height: 105
+      id: final_answer
+      position:
+        x: 3380
+        y: 522
+      positionAbsolute:
+        x: 3380
+        y: 522
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.3

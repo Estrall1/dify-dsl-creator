@@ -1,0 +1,410 @@
+app:
+  description: 青莲 Dify 0.3.1 示例：知识库优先，检索为空时调用搜索 API
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 青莲知识库兜底示例
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.6@dd589dc093c8084925858034ab5ec1fdf0d33819f43226c2f8c4a749a9acbbb2
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: Tavily API Key，导入后在青莲中填写
+    id: env-tavily-api-key
+    name: TAVILY_API_KEY
+    selector:
+    - env
+    - TAVILY_API_KEY
+    value: ''
+    value_type: secret
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 500
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 你好，我会优先查询知识库；如果知识库没有内容，再为你搜索最新资料。
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1792459508377-source-1792459850498-target
+      source: '1792459508377'
+      sourceHandle: source
+      target: '1792459850498'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: if-else
+      id: 1792459850498-source-1792459865640-target
+      source: '1792459850498'
+      sourceHandle: source
+      target: '1792459865640'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1792459865640-true-1792459525982-target
+      source: '1792459865640'
+      sourceHandle: 'true'
+      target: '1792459525982'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: llm
+      id: 1792459525982-source-1792460083531-target
+      source: '1792459525982'
+      sourceHandle: source
+      target: '1792460083531'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1792460083531-source-1792460254464-target
+      source: '1792460083531'
+      sourceHandle: source
+      target: '1792460254464'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1792459865640-false-1792460300000-target
+      source: '1792459865640'
+      sourceHandle: 'false'
+      target: '1792460300000'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1792460300000-source-1792460310000-target
+      source: '1792460300000'
+      sourceHandle: source
+      target: '1792460310000'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: '1792459508377'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids:
+        - dataset-id-placeholder
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: weighted_score
+          reranking_model:
+            model: ''
+            provider: ''
+          top_k: 4
+          weights:
+            keyword_setting:
+              keyword_weight: 0.3
+            vector_setting:
+              embedding_model_name: ''
+              embedding_provider_name: ''
+              vector_weight: 0.7
+        query_variable_selector:
+        - '1792459508377'
+        - sys.query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索
+        type: knowledge-retrieval
+      height: 90
+      id: '1792459850498'
+      position:
+        x: 430
+        y: 282
+      positionAbsolute:
+        x: 430
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: f820e7c5-1f88-4bb7-98f4-c1cf45064dac
+            value: ''
+            varType: array[object]
+            variable_selector:
+            - '1792459850498'
+            - result
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 知识库是否为空
+        type: if-else
+      height: 130
+      id: '1792459865640'
+      position:
+        x: 780
+        y: 282
+      positionAbsolute:
+        x: 780
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-61
+            key: ''
+            type: text
+            value: '{"api_key":"{{tavily_api_key}}","query":"{{user_query}}","search_depth":"basic","max_results":3}'
+          type: json
+        desc: ''
+        headers: 'Content-Type:application/json'
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 10
+          max_read_timeout: 60
+          max_write_timeout: 10
+        title: 搜索 API
+        type: http-request
+        url: https://api.tavily.com/search
+        variables:
+        - variable: user_query
+          value_selector:
+          - '1792459508377'
+          - sys.query
+        - variable: tavily_api_key
+          value_selector:
+          - env
+          - TAVILY_API_KEY
+      height: 130
+      id: '1792459525982'
+      position:
+        x: 1130
+        y: 282
+      positionAbsolute:
+        x: 1130
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.3
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - role: system
+          text: 你是专业助手。请结合搜索资料回答用户问题；资料不足时明确说明，不要编造。
+        - role: user
+          text: '用户问题：{{#sys.query#}}
+
+            搜索资料：{{#1792459525982.body#}}'
+        selected: false
+        title: 基于搜索回答
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1792460083531'
+      position:
+        x: 1480
+        y: 282
+      positionAbsolute:
+        x: 1480
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1792460083531.text#}}'
+        desc: ''
+        selected: false
+        title: 搜索回答
+        type: answer
+        variables: []
+      height: 105
+      id: '1792460254464'
+      position:
+        x: 1830
+        y: 282
+      positionAbsolute:
+        x: 1830
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1792459850498'
+          - result
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.3
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - role: system
+          text: 你是客服助手。请严格依据知识库检索结果回答；如果结果中没有答案，请礼貌说明并建议用户补充信息。
+        - role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 基于知识库回答
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1792460300000'
+      position:
+        x: 1130
+        y: 642
+      positionAbsolute:
+        x: 1130
+        y: 642
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1792460300000.text#}}'
+        desc: ''
+        selected: false
+        title: 知识库回答
+        type: answer
+        variables: []
+      height: 105
+      id: '1792460310000'
+      position:
+        x: 1480
+        y: 642
+      positionAbsolute:
+        x: 1480
+        y: 642
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.5

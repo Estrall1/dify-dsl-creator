@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dify DSL Creator"
+  short_description: "Generate and validate Dify workflow/Chatflow DSL YAML"
+  default_prompt: "Confirm the target Dify version and app mode, build a node inventory, generate Dify DSL YAML with correct selectors and edges, then run scripts/validate_dify_dsl.py until VALIDATION_OK."
